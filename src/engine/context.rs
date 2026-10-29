@@ -70,8 +70,28 @@ impl Context {
         data: *const vk::DebugUtilsMessengerCallbackDataEXT<'_>,
         _user_data: *mut c_void,
     ) -> vk::Bool32 {
-        let message = unsafe { CStr::from_ptr((*data).p_message).to_string_lossy() };
-        eprintln!("[{severity:?}] [{msg_type:?}] {message}\n");
+        // Just in case it's a nullptr so it doesn't explode
+        let Some(data) = (unsafe { data.as_ref() }) else {
+            return vk::FALSE;
+        };
+        let id_name = unsafe {
+            CStr::from_ptr(data.p_message_id_name)
+                .to_string_lossy()
+                .to_string()
+        };
+        let message = unsafe { CStr::from_ptr(data.p_message).to_string_lossy().to_string() };
+        let id_number = data.message_id_number;
+
+        if severity.contains(vk::DebugUtilsMessageSeverityFlagsEXT::ERROR) {
+            tracing::error!(?msg_type, id = %id_name, id_number, "{message}");
+        } else if severity.contains(vk::DebugUtilsMessageSeverityFlagsEXT::WARNING) {
+            tracing::warn!(?msg_type, id = %id_name, id_number, "{message}");
+        } else if severity.contains(vk::DebugUtilsMessageSeverityFlagsEXT::INFO) {
+            tracing::info!(?msg_type, id = %id_name, id_number, "{message}");
+        } else {
+            tracing::trace!(?msg_type, id = %id_name, id_number, "{message}");
+        }
+
         vk::FALSE
     }
 }
