@@ -8,6 +8,8 @@ const VALIDATION_LAYERS: [&CStr; 1] = [c"VK_LAYER_KHRONOS_validation"];
 
 pub struct Context {
     pub instance: ash::Instance,
+    debug_utils: ash::ext::debug_utils::Instance,
+    messenger: vk::DebugUtilsMessengerEXT,
     _entry: ash::Entry,
 }
 
@@ -26,6 +28,12 @@ impl Context {
             .map(|s| CString::new(s).expect("Error parsing instance extensions to CStrings"))
             .collect();
         instance_extensions.extend(INSTANCE_EXTENSIONS.iter().map(|&s| s.to_owned()));
+        instance_extensions.sort();
+
+        tracing::info!("Enabled instance extensions:");
+        for ext in &instance_extensions {
+            tracing::info!("\t{ext:?}");
+        }
 
         let instance_extensions_ptrs: Vec<*const i8> =
             instance_extensions.iter().map(|cs| cs.as_ptr()).collect();
@@ -43,8 +51,15 @@ impl Context {
 
         let instance = unsafe { entry.create_instance(&instance_info, None)? };
 
+        let debug_utils = ash::ext::debug_utils::Instance::load(&entry, &instance);
+        let messenger = unsafe {
+            debug_utils.create_debug_utils_messenger(&Self::debug_messenger_info(), None)?
+        };
+
         Ok(Self {
             instance,
+            debug_utils,
+            messenger,
             _entry: entry,
         })
     }
@@ -54,7 +69,6 @@ impl Context {
             .message_severity(
                 vk::DebugUtilsMessageSeverityFlagsEXT::WARNING
                     | vk::DebugUtilsMessageSeverityFlagsEXT::ERROR,
-                // add VERBOSE / INFO if you want the noise
             )
             .message_type(
                 vk::DebugUtilsMessageTypeFlagsEXT::GENERAL
@@ -70,10 +84,7 @@ impl Context {
         data: *const vk::DebugUtilsMessengerCallbackDataEXT<'_>,
         _user_data: *mut c_void,
     ) -> vk::Bool32 {
-        // Just in case it's a nullptr so it doesn't explode
-        let Some(data) = (unsafe { data.as_ref() }) else {
-            return vk::FALSE;
-        };
+        let data = unsafe { *data };
         let id_name = unsafe {
             CStr::from_ptr(data.p_message_id_name)
                 .to_string_lossy()
@@ -83,13 +94,13 @@ impl Context {
         let id_number = data.message_id_number;
 
         if severity.contains(vk::DebugUtilsMessageSeverityFlagsEXT::ERROR) {
-            tracing::error!(?msg_type, id = %id_name, id_number, "{message}");
+            tracing::error!("[{msg_type:?}] [{id_name}-{id_number:#x}]: {message}");
         } else if severity.contains(vk::DebugUtilsMessageSeverityFlagsEXT::WARNING) {
-            tracing::warn!(?msg_type, id = %id_name, id_number, "{message}");
+            tracing::warn!("[{msg_type:?}] [{id_name}-{id_number:#x}]: {message}");
         } else if severity.contains(vk::DebugUtilsMessageSeverityFlagsEXT::INFO) {
-            tracing::info!(?msg_type, id = %id_name, id_number, "{message}");
+            tracing::info!("[{msg_type:?}] [{id_name}-{id_number:#x}]: {message}");
         } else {
-            tracing::trace!(?msg_type, id = %id_name, id_number, "{message}");
+            tracing::trace!("[{msg_type:?}] [{id_name}-{id_number:#x}]: {message}");
         }
 
         vk::FALSE
@@ -99,6 +110,8 @@ impl Context {
 impl Drop for Context {
     fn drop(&mut self) {
         unsafe {
+            self.debug_utils
+                .destroy_debug_utils_messenger(self.messenger, None);
             self.instance.destroy_instance(None);
         }
     }

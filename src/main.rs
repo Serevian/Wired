@@ -42,7 +42,7 @@ fn run() -> Result<()> {
         .build()
         .context("Error creating SDL3 window: ")?;
 
-    let engine = Engine::new(&window).context("Error creating engine")?;
+    let engine = Engine::new(&window)?;
 
     let mut event_pump = sdl.event_pump().context("Error creating SDL3 event pump")?;
 

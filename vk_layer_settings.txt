@@ -18,7 +18,7 @@ khronos_validation.check_shaders_caching = true
 # Debug Action
 # =====================
 # Specifies what action is to be taken when a layer reports information
-khronos_validation.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG,VK_DBG_LAYER_ACTION_DEBUG_OUTPUT
+khronos_validation.debug_action = VK_DBG_LAYER_ACTION_DEFAULT
 
 # Descriptor Hashing
 # =====================
@@ -98,7 +98,7 @@ khronos_validation.gpuav_descriptor_checks = true
 # GPU Assisted Validation (GPU-AV)
 # =====================
 # Enable validation that cannot be done the CPU and needs hooks into the GPU execution
-khronos_validation.gpuav_enable = true
+khronos_validation.gpuav_enable = false
 
 # Force on robustness features
 # =====================
@@ -196,7 +196,7 @@ khronos_validation.legacy_detection = true
 # When to give warning
 # =====================
 # Control when legacy detection warnings are emitted
-khronos_validation.legacy_detection_mode = ALWAYS
+khronos_validation.legacy_detection_mode = true
 
 # Log Filename
 # =====================
@@ -216,8 +216,7 @@ khronos_validation.message_format_json = false
 # Mute Message VUIDs
 # =====================
 # List of VUIDs which are to be IGNORED by the validation layer. The list is comma separated and can be either the entire VUID string, the hashed value, or the last 5 digit number of a VUID
-# Shut up about GPU-AV and Core Checks being enabled at the same time
-khronos_validation.message_id_filter = 0x7f1922d7
+khronos_validation.message_id_filter =
 
 # Object Lifetime
 # =====================
