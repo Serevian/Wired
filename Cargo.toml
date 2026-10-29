@@ -8,6 +8,9 @@ anyhow = "1.0.104"
 ash = { git = "https://github.com/ash-rs/ash", branch = "update"}
 ash-window = { git = "https://github.com/ash-rs/ash", branch = "update"}
 sdl3 = { git = "https://github.com/vhspace/sdl3-rs", features = ["raw-window-handle"] }
+tracing = "0.1.44"
+tracing-appender = "0.2.5"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 vk-mem = { git = "https://github.com/Serevian/vk-mem-rs" }
 
 [lints.clippy]
