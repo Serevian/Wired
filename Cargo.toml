@@ -1,0 +1,15 @@
+[package]
+name = "Wired"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+ash = { git = "https://github.com/ash-rs/ash", branch = "update"}
+ash-window = { git = "https://github.com/ash-rs/ash", branch = "update"}
+sdl3 = { git = "https://github.com/vhspace/sdl3-rs", features = ["raw-window-handle"] }
+vk-mem = { git = "https://github.com/Serevian/vk-mem-rs" }
+
+[lints.clippy]
+nursery = "warn"
+pedantic = "warn"
