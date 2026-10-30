@@ -50,7 +50,7 @@ impl Device {
                     .contains(vk::QueueFlags::GRAPHICS)
             })
             .context("Error finding a suitable queue family")?;
-        let queue_family_index = queue_family_index as u32;
+        let queue_family_index = u32::try_from(queue_family_index)?;
 
         let queue_create_info = [vk::DeviceQueueCreateInfo::default()
             .queue_family_index(queue_family_index)

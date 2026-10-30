@@ -13,7 +13,7 @@ mod engine;
 fn main() -> ExitCode {
     let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
     let file = File::create("engine.log").expect("failed to create engine.log");
-    let (file_writer, guard) = non_blocking(file);
+    let (file_writer, _guard) = non_blocking(file);
 
     tracing_subscriber::registry()
         .with(filter)
