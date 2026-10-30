@@ -7,6 +7,9 @@ edition = "2024"
 anyhow = "1.0.104"
 ash = { git = "https://github.com/ash-rs/ash", branch = "update"}
 ash-window = { git = "https://github.com/ash-rs/ash", branch = "update"}
+bytemuck = { version = "1.25.2", features = ["derive"] }
+glam = { version = "0.34.1", features = ["bytemuck"] }
+gltf = { version = "1.4.1", features = ["names", "extras", "extensions"] }
 raw-window-handle = "0.6.2"
 sdl3 = { git = "https://github.com/vhspace/sdl3-rs", features = ["raw-window-handle"] }
 tracing = "0.1.44"

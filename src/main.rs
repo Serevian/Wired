@@ -45,7 +45,9 @@ fn run() -> Result<()> {
     let display_handle = window.display_handle().unwrap().as_raw();
     let window_handle = window.window_handle().unwrap().as_raw();
 
-    let engine = Engine::new(display_handle, window_handle)?;
+    let window_size = window.size();
+
+    let engine = Engine::new(display_handle, window_handle, window_size)?;
 
     let mut event_pump = sdl.event_pump().context("Error creating SDL3 event pump")?;
 

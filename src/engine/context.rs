@@ -4,14 +4,17 @@ use anyhow::Result;
 use ash::vk::{self, TaggedStructure};
 use raw_window_handle::RawDisplayHandle;
 
-const INSTANCE_EXTENSIONS: [&CStr; 1] = [ash::ext::debug_utils::NAME];
+const INSTANCE_EXTENSIONS: [&CStr; 2] = [
+    ash::ext::debug_utils::NAME,
+    ash::khr::get_surface_capabilities2::NAME,
+];
 const VALIDATION_LAYERS: [&CStr; 1] = [c"VK_LAYER_KHRONOS_validation"];
 
 pub struct Context {
     pub instance: ash::Instance,
     debug_utils: ash::ext::debug_utils::Instance,
     messenger: vk::DebugUtilsMessengerEXT,
-    _entry: ash::Entry,
+    pub entry: ash::Entry,
 }
 
 impl Context {
@@ -61,7 +64,7 @@ impl Context {
             instance,
             debug_utils,
             messenger,
-            _entry: entry,
+            entry,
         })
     }
 
