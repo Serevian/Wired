@@ -17,10 +17,7 @@ pub struct Device {
 }
 
 impl Device {
-    pub fn new(
-        context: &crate::engine::context::Context,
-        sdl_window: &sdl3::video::Window,
-    ) -> Result<(Self, Queue)> {
+    pub fn new(context: &crate::engine::context::Context) -> Result<(Self, Queue)> {
         let physical_devices = unsafe { context.instance.enumerate_physical_devices()? };
         // Maybe do a better device search?
         let physical_device = physical_devices[0];

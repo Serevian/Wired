@@ -7,6 +7,7 @@ edition = "2024"
 anyhow = "1.0.104"
 ash = { git = "https://github.com/ash-rs/ash", branch = "update"}
 ash-window = { git = "https://github.com/ash-rs/ash", branch = "update"}
+raw-window-handle = "0.6.2"
 sdl3 = { git = "https://github.com/vhspace/sdl3-rs", features = ["raw-window-handle"] }
 tracing = "0.1.44"
 tracing-appender = "0.2.5"

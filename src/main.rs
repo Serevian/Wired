@@ -1,6 +1,7 @@
 use std::{fs::File, process::ExitCode};
 
 use anyhow::{Context, Result};
+use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 use sdl3::{event::Event, keyboard::Keycode};
 use tracing_appender::non_blocking;
 use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt};
@@ -41,8 +42,10 @@ fn run() -> Result<()> {
         .position_centered()
         .build()
         .context("Error creating SDL3 window: ")?;
+    let display_handle = window.display_handle().unwrap().as_raw();
+    let window_handle = window.window_handle().unwrap().as_raw();
 
-    let engine = Engine::new(&window)?;
+    let engine = Engine::new(display_handle, window_handle)?;
 
     let mut event_pump = sdl.event_pump().context("Error creating SDL3 event pump")?;
 

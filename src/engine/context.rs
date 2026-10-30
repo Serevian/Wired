@@ -1,7 +1,8 @@
-use std::ffi::{CStr, CString, c_void};
+use std::ffi::{CStr, c_void};
 
 use anyhow::Result;
 use ash::vk::{self, TaggedStructure};
+use raw_window_handle::RawDisplayHandle;
 
 const INSTANCE_EXTENSIONS: [&CStr; 1] = [ash::ext::debug_utils::NAME];
 const VALIDATION_LAYERS: [&CStr; 1] = [c"VK_LAYER_KHRONOS_validation"];
@@ -14,7 +15,7 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn new(sdl_window: &sdl3::video::Window) -> Result<Self> {
+    pub fn new(display_handle: &RawDisplayHandle) -> Result<Self> {
         let entry = unsafe { ash::Entry::load()? };
 
         let application_info = vk::ApplicationInfo::default()
@@ -22,12 +23,12 @@ impl Context {
             .api_version(vk::API_VERSION_1_4);
 
         // I should really check if extensions and layers are use
-        let mut instance_extensions: Vec<CString> = sdl_window
-            .vulkan_instance_extensions()?
-            .into_iter()
-            .map(|s| CString::new(s).expect("Error parsing instance extensions to CStrings"))
-            .collect();
-        instance_extensions.extend(INSTANCE_EXTENSIONS.iter().map(|&s| s.to_owned()));
+        let mut instance_extensions: Vec<&CStr> =
+            ash_window::enumerate_required_extensions(*display_handle)?
+                .iter()
+                .map(|ptr| unsafe { CStr::from_ptr(*ptr) })
+                .collect();
+        instance_extensions.extend(INSTANCE_EXTENSIONS.iter());
         instance_extensions.sort();
 
         tracing::info!("Enabled instance extensions:");

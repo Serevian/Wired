@@ -1,5 +1,6 @@
 use anyhow::{Ok, Result};
 use ash::vk;
+use raw_window_handle::{RawDisplayHandle, RawWindowHandle};
 
 use crate::engine::{
     context::Context,
@@ -17,9 +18,9 @@ pub struct Engine {
 }
 
 impl Engine {
-    pub fn new(sdl_window: &sdl3::video::Window) -> Result<Self> {
-        let context = Context::new(sdl_window)?;
-        let (device, queue) = Device::new(&context, sdl_window)?;
+    pub fn new(display_handle: RawDisplayHandle, window_handle: RawWindowHandle) -> Result<Self> {
+        let context = Context::new(&display_handle)?;
+        let (device, queue) = Device::new(&context)?;
 
         let mut allocator_info =
             vk_mem::AllocatorCreateInfo::new(&context.instance, &device.logical, device.physical);
