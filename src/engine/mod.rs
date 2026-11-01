@@ -103,7 +103,7 @@ impl Engine {
 impl Drop for Engine {
     fn drop(&mut self) {
         for frame in &mut self.frames {
-            frame.destroy(&self.allocator);
+            frame.destroy(&self.device, &self.allocator);
         }
         unsafe {
             for semaphore in &self.render_complete_semaphores {
